@@ -1,34 +1,58 @@
-let task = {
-    theTask : [],
+let toDoList = [];
 
-    addTask : function (taskNames, taskId){
-        let thatTask = {
-            taskNames : taskNames,
-            taskId : taskId,
-            status : true,
+function addTask() {
+    let toDoInput = document.getElementById('toDoInput');
+    let taskText = toDoInput.value.trim();
+
+    if (taskText === '') {
+        alert('enter a valid task.');
+        return;
+    }
+
+    let task = {
+        text: taskText,
+        completed: false
+    };
+
+    toDoList.push(task);
+    rendertoDoList();
+    toDoInput.value = '';
+}
+
+function completingTask(index) {
+    toDoList[index].completed = !toDoList[index].completed;
+    rendertoDoList();
+}
+
+function deleteTask(index) {
+    toDoList.splice(index, 1);
+    rendertoDoList();
+}
+
+function rendertoDoList() {
+    let taskList = document.getElementById('taskList');
+    taskList.innerHTML = '';
+
+    toDoList.forEach(function(task, index) {
+        let taskItem = document.createElement('li');
+        taskItem.textContent = task.text;
+
+        taskItem.onclick = function() {
+            completingTask(index);
         };
 
-        this.theTaskask.push(thatTask);
-        console.log('task added successful !');
-    },
+        if (task.completed) {
+            taskItem.classList.add('completed');
+        }
 
-    displayTask : function (){
-        console.log('Your tasks are:');
-        this.theTask.forEach( function (thatTask){
-            console.log(`${thatTask.taskNames} having the (Task ID: ${thatTask.taskId}) - is: ${thatTask.status ? 'completed' : 'failed to complete'}`);
-        });
-    }
-};
+        let deleteButton = document.createElement('button');
+        deleteButton.textContent = '❌';
+        deleteButton.onclick = function(event) {
+            event.stopPropagation();
+            deleteTask(index);
+        };
 
-task.addTask('Work out', 1);
-task.addTask('Pray', 2);
-task.addTask('Learn JavaScript objects', 3);
-task.addTask('push my work on github repository', 4);
-task.addTask('Cook', 5);
-
-
-let categories ={
-    catTitle : '',
-};
-
-console.log(task);
+        taskItem.appendChild(deleteButton);
+        taskList.appendChild(taskItem);
+    });
+}
